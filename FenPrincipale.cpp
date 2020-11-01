@@ -2,23 +2,29 @@
 
 FenPrincipale::FenPrincipale()
 {
-    // Gestion de layout pour empiler des widgets verticalement
     QVBoxLayout *layout = new QVBoxLayout;
 
-    // modèle contenant l'arbre de tout les disques dur (arborescence)
-    QDirModel *modele = new QDirModel;
+    QStringList listePays;
+    listePays << "France" << "Espagne" << "Italie" << "Portugal" << "Suisse";
+    modele = new QStringListModel(listePays);
 
-    // vue (schema Modèle/vue) pour visualiser l'arboresence du modèle.
-    QTreeView *vue = new QTreeView;
-
-    // ne pas oublier de relier la vue au modèle.
+    vue = new QListView ;
     vue->setModel(modele);
 
-    // possibilité de choisir le disque dur à visualiser (ici C:)
-    vue->setRootIndex(modele->index("C:"));
+    bouton = new QPushButton("Afficher la sélection");
 
-
-    // ajout du widget à la layout et ne pas oublier le set
     layout->addWidget(vue);
+    layout->addWidget(bouton);
+
     setLayout(layout);
+
+    connect(bouton, SIGNAL(clicked()), this, SLOT(clicSelection()));
+}
+
+void FenPrincipale::clicSelection()
+{
+    QItemSelectionModel *selection = vue->selectionModel();
+    QModelIndex indexElementSelectionne = selection->currentIndex();
+    QVariant elementSelectionne = modele->data(indexElementSelectionne, Qt::DisplayRole);
+    QMessageBox::information(this, "Elément sélectionné", elementSelectionne.toString());
 }
